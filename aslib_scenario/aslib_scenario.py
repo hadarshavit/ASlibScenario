@@ -128,7 +128,7 @@ class ASlibScenario(object):
         self.feature_data = self.feature_data.replace('?', np.nan)
         self.performance_data = pd.read_csv(perf_fn, index_col=0)
         self.performance_data_all = [self.performance_data]
-
+        self.instances = list(self.feature_data.index)  # lis
         self.algorithms = list(
             self.performance_data.columns)  # list of strings
         # self.algortihms_deterministics = self.algorithms  # list of strings
@@ -165,7 +165,7 @@ class ASlibScenario(object):
                     example_feat = self.feature_group_dict[group][0]
                     features_status[instance][group] = "ok" if not np.isnan(self.feature_data.loc[instance][example_feat]) else "timeout"
             self.feature_runstatus_data = pd.DataFrame(features_status)
-        self.instances = list(self.feature_data.index)  # lis
+        
 
         self.runstatus_data = pd.DataFrame(
             data=np.array(
