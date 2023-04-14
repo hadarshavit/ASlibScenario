@@ -143,6 +143,8 @@ class ASlibScenario(object):
                 "all": {"provides": self.features_deterministic}}
             self.feature_steps = ["all"]
             self.feature_steps_default = ["all"]
+            self.feature_runstatus_data = pd.DataFrame(
+                data=["ok"] * len(self.instances), index=self.instances, columns=["all"])
         else:
             features_desc_df = pd.read_csv(features_desc)
             groups = features_desc_df['group'].unique()
@@ -155,6 +157,14 @@ class ASlibScenario(object):
                 self.feature_group_dict[group] = features_in_group
             self.feature_steps = groups
             self.feature_steps_default = groups
+
+            features_status = {}
+            for instance in self.instances:
+                features_status[instance] = {}
+                for group in self.feature_steps:
+                    example_feat = self.feature_group_dict[group][0]
+                    features_status[instance][group] = "ok" if not np.isnan(self.feature_data.loc[instance][example_feat]) else "timeout"
+            self.feature_runstatus_data = pd.DataFrame(features_status)
         self.instances = list(self.feature_data.index)  # lis
 
         self.runstatus_data = pd.DataFrame(
@@ -167,8 +177,7 @@ class ASlibScenario(object):
             self.runstatus_data[
                 self.performance_data >= runtime_cutoff] = "timeout"
 
-        self.feature_runstatus_data = pd.DataFrame(
-            data=["ok"] * len(self.instances), index=self.instances, columns=["all"])
+        
 
         self.feature_cost_data = None
         self.ground_truth_data = None
