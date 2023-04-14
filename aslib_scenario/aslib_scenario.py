@@ -125,7 +125,7 @@ class ASlibScenario(object):
         self.features_cutoff_memory = None  # integer
 
         self.feature_data = pd.read_csv(feat_fn, index_col=0)
-        self.feature_data.replace('?', np.nan)
+        self.feature_data = self.feature_data.replace('?', np.nan)
         self.performance_data = pd.read_csv(perf_fn, index_col=0)
         self.performance_data_all = [self.performance_data]
 
