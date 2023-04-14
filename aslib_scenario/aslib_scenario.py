@@ -162,7 +162,7 @@ class ASlibScenario(object):
             for instance in self.instances:
                 features_status[instance] = {}
                 for group in self.feature_steps:
-                    example_feat = self.feature_group_dict[group][0]
+                    example_feat = self.feature_group_dict[group]['provides'][0]
                     features_status[instance][group] = "ok" if not np.isnan(self.feature_data.loc[instance][example_feat]) else "timeout"
             self.feature_runstatus_data = pd.DataFrame(features_status)
         
