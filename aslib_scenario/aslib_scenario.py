@@ -93,7 +93,8 @@ class ASlibScenario(object):
                       objective: str, 
                       runtime_cutoff: float, 
                       maximize: bool,
-                      cv_fn: str=None):
+                      cv_fn: str=None,
+                      features_desc=None):
         '''
             create an internal ASlib scenario from csv
 
@@ -135,11 +136,22 @@ class ASlibScenario(object):
         self.features_deterministic = list(
             self.feature_data.columns)  # list of strings
         self.features_stochastic = []  # list of strings
-        self.feature_group_dict = {
-            "all": {"provides": self.features_deterministic}}
-        self.feature_steps = ["all"]
-        self.feature_steps_default = ["all"]
 
+        if features_desc is None:
+            self.feature_group_dict = {
+                "all": {"provides": self.features_deterministic}}
+            self.feature_steps = ["all"]
+            self.feature_steps_default = ["all"]
+        else:
+            features_desc_df = pd.read_csv(features_desc)
+            groups = features_desc_df['group'].unique()
+            self.feature_group_dict = {}
+            for group in groups:
+                features_in_group = \
+                    features_desc_df[features_desc_df['group'] == group].to_list() 
+                self.feature_group_dict[group] = features_in_group
+            self.feature_steps = groups
+            self.feature_steps_default = groups
         self.instances = list(self.feature_data.index)  # lis
 
         self.runstatus_data = pd.DataFrame(
