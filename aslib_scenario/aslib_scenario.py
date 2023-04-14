@@ -147,8 +147,10 @@ class ASlibScenario(object):
             groups = features_desc_df['group'].unique()
             self.feature_group_dict = {}
             for group in groups:
-                features_in_group = \
-                    features_desc_df[features_desc_df['group'] == group]['feature'].to_list() 
+                features_in_group = {'provides': 
+                    features_desc_df[features_desc_df['group'] == group]['feature'].to_list(),
+                    'requires': []
+                }
                 self.feature_group_dict[group] = features_in_group
             self.feature_steps = groups
             self.feature_steps_default = groups
