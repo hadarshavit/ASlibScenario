@@ -6,7 +6,7 @@ requirements = ['numpy', 'scipy', 'pyyaml', 'liac-arff', 'pandas']
 
 setuptools.setup(
     name="aslib_scenario",
-    version="1.0.3",
+    version="1.0.4",
     author="Marius Lindauer",
     author_email="lindauer@cs.uni-freiburg.de",
     description=("Python Package to read scenario from the algorithm selection library"),
