@@ -195,7 +195,7 @@ class ASlibScenario(object):
         if self.CHECK_VALID:
             self.check_data()
 
-    def read_scenario(self, dn):
+    def read_scenario(self, dn, add_features_costs_to_features=False):
         '''
             read an ASlib scenario from disk
 
@@ -210,6 +210,16 @@ class ASlibScenario(object):
         self.dir_ = dn
         self.find_files()
         self.read_files()
+
+        if add_features_costs_to_features and self.feature_cost_data is not None:
+            feats_costs = self.feature_cost_data.copy()
+            feats_costs.columns = [f'Time_{c}' for c in feats_costs.columns]
+            pd.concat([self.feature_data, feats_costs], axis=1)
+            self.feature_steps.append('time')
+            self.features_deterministic += feats_costs.columns
+            self.feature_group_dict['Time'] = {
+                'provides': feats_costs.columns
+            }
 
         if self.CHECK_VALID:
             self.check_data()
