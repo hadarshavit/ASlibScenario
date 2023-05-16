@@ -3,3 +3,4 @@ scipy
 pyyaml
 liac-arff
 pandas
+sklearn

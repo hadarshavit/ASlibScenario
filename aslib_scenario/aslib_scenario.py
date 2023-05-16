@@ -62,6 +62,7 @@ class ASlibScenario(object):
         self.cv_data = None
 
         self.instances = None  # list
+        self.par = 10
 
         self.found_files = []
         self.read_funcs = {
@@ -195,7 +196,7 @@ class ASlibScenario(object):
         if self.CHECK_VALID:
             self.check_data()
 
-    def read_scenario(self, dn, add_features_costs_to_features=False):
+    def read_scenario(self, dn, add_features_costs_to_features=False, par=10):
         '''
             read an ASlib scenario from disk
 
@@ -210,6 +211,8 @@ class ASlibScenario(object):
         self.dir_ = dn
         self.find_files()
         self.read_files()
+
+        self.par = par
 
         if add_features_costs_to_features and self.feature_cost_data is not None:
             feats_costs = self.feature_cost_data.copy()
@@ -766,7 +769,7 @@ class ASlibScenario(object):
                 self.logger.debug(
                     "Replace all runtime data with PAR10 values for non-OK runs")
                 self.performance_data_all[perf_type_i][
-                    self.runstatus_data != "ok"] = self.algorithm_cutoff_time * 10
+                    self.runstatus_data != "ok"] = self.algorithm_cutoff_time * self.par
 
             if perf_type == "solution_quality" and self.maximize[perf_type_i]:
                 self.logger.info(
