@@ -214,12 +214,14 @@ class ASlibScenario(object):
         if add_features_costs_to_features and self.feature_cost_data is not None:
             feats_costs = self.feature_cost_data.copy()
             feats_costs.columns = [f'Time_{c}' for c in feats_costs.columns]
-            pd.concat([self.feature_data, feats_costs], axis=1)
-            self.feature_steps.append('time')
-            self.features_deterministic += feats_costs.columns
+            self.feature_data = pd.concat([self.feature_data, feats_costs], axis=1)
+            self.feature_steps.append('Time')
+            self.features_deterministic += feats_costs.columns.tolist()
             self.feature_group_dict['Time'] = {
-                'provides': feats_costs.columns
+                'provides': feats_costs.columns.tolist()
             }
+            self.feature_cost_data['Time'] = 0
+            self.feature_runstatus_data['Time'] = 'ok'
 
         if self.CHECK_VALID:
             self.check_data()
@@ -503,6 +505,8 @@ class ASlibScenario(object):
                 self.logger.error(
                     "Feature \"%s\" was not defined as deterministic or stochastic" % (f_name))
                 sys.exit(3)
+        
+        assert len(self.features) == len(arff_dict["attributes"][2:])
 
         pairs_inst_rep = []
         encoutered_features = []
@@ -534,14 +538,14 @@ class ASlibScenario(object):
                     "Pair (%s,%s) is not unique in %s" % (inst_name, repetition, fn))
             else:
                 pairs_inst_rep.append((inst_name, repetition))
-
+        
         # convert to pandas
         cols = list(map(lambda x: x[0], arff_dict["attributes"]))
         self.feature_data = pd.DataFrame(arff_dict["data"], columns=cols)
-
+        print(self.feature_data.columns)
         self.feature_data = self.feature_data.groupby(['instance_id']).aggregate(np.mean)
         self.feature_data = self.feature_data.drop("repetition", axis=1)
-        
+        print(self.feature_data.columns)
         duplicates = self.feature_data.duplicated().sum()
         if duplicates > 0:
             self.logger.warn("Found %d duplicated feature vectors" %(duplicates))
