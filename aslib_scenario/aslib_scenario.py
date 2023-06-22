@@ -63,7 +63,6 @@ class ASlibScenario(object):
 
         self.instances = None  # list
         self.par = 10
-
         self.found_files = []
         self.read_funcs = {
             "description.txt": self.read_description,
@@ -95,7 +94,9 @@ class ASlibScenario(object):
                       runtime_cutoff: float, 
                       maximize: bool,
                       cv_fn: str=None,
-                      features_desc=None):
+                      features_desc=None,
+                      par=10,
+                      features_costs=None):
         '''
             create an internal ASlib scenario from csv
 
@@ -114,7 +115,7 @@ class ASlibScenario(object):
             cv_fn: str
                 cv split file in csv format
         '''
-
+        self.par = par
         self.scenario = None  # string
         self.performance_measure = ["dummy"]  # list of strings
         # list of "runtime" or "solution_quality"
@@ -168,6 +169,17 @@ class ASlibScenario(object):
                     features_status[instance][group] = "ok" if not np.isnan(self.feature_data.loc[instance][example_feat]) else "timeout"
             self.feature_runstatus_data = pd.DataFrame(features_status).T
         
+        if features_costs:
+            print("Reading feature costs from {}".format(features_costs))
+            costs_columns = pd.read_csv(features_costs)
+            print(costs_columns)
+            self.feature_cost_data = self.feature_data[costs_columns['feature'].values]
+            print(costs_columns['feature'].values)
+            self.feature_cost_data.columns = costs_columns['group'].values
+            self.feature_cost_data[pd.isnull(self.feature_cost_data)] = 60.0
+            self.feature_cost_data['gnn'] = 0.0
+            self.feature_cost_data['time'] = 0.0
+        
 
         self.runstatus_data = pd.DataFrame(
             data=np.array(
@@ -181,7 +193,7 @@ class ASlibScenario(object):
 
         
 
-        self.feature_cost_data = None
+        # self.feature_cost_data = None
         self.ground_truth_data = None
 
         # extracted in other files
